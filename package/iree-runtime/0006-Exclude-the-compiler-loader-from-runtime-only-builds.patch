@@ -1,0 +1,22 @@
+From: Marc Lainez <marc.lainez@gmail.com>
+Subject: [PATCH] Exclude the compiler loader from runtime-only builds
+
+The compiler C API loader links against LLVM targets that only exist when
+the compiler is built. Runtime-only builds with the Python bindings
+include the compiler bindings directory and fail to link it.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+diff --git a/compiler/bindings/c/CMakeLists.txt b/compiler/bindings/c/CMakeLists.txt
+--- a/compiler/bindings/c/CMakeLists.txt
++++ b/compiler/bindings/c/CMakeLists.txt
+@@ -76,6 +76,9 @@
+           iree::compiler::API::SharedImpl
+       )
+   endif()
++  if(NOT IREE_BUILD_COMPILER)
++    iree_cc_library_exclude_from_all(loader TRUE)
++  endif()
+ else()
+   # Dynamic library loading not available. Exclude loader from all.
+   message(STATUS "Disabling compiler loader (platform does not support library loading)")

@@ -9,6 +9,11 @@ IREE_RUNTIME_SITE = $(call github,iree-org,iree,$(IREE_RUNTIME_VERSION))
 IREE_RUNTIME_LICENSE = Apache-2.0 with LLVM exception
 IREE_RUNTIME_LICENSE_FILES = LICENSE
 IREE_RUNTIME_INSTALL_STAGING = YES
+# IREE writes files to its source directory that it also generates in its
+# build directory
+IREE_RUNTIME_SUPPORTS_IN_SOURCE_BUILD = NO
+# The Python extension's output name has directories that only Ninja creates
+IREE_RUNTIME_CMAKE_BACKEND = ninja
 
 # The runtime needs only a few of IREE's git submodules, at the revisions
 # that this IREE revision pins; the Python bindings also need nanobind.
@@ -43,10 +48,13 @@ IREE_RUNTIME_COMMON_CONF_OPTS = \
 	-DIREE_BUILD_COMPILER=OFF \
 	-DIREE_BUILD_TESTS=OFF \
 	-DIREE_BUILD_SAMPLES=OFF \
+	-DIREE_BUILD_BENCHMARKS=OFF \
 	-DIREE_BUILD_BINDINGS_TFLITE=OFF \
 	-DIREE_ENABLE_WERROR_FLAG=OFF \
 	-DIREE_ERROR_ON_MISSING_SUBMODULES=OFF \
-	-DIREE_HAL_DRIVER_DEFAULTS=OFF
+	-DIREE_HAL_DRIVER_DEFAULTS=OFF \
+	-DIREE_ENABLE_LIBBACKTRACE=OFF \
+	-DFETCHCONTENT_FULLY_DISCONNECTED=ON
 
 # The host build only provides the tools the cross build runs
 HOST_IREE_RUNTIME_DEPENDENCIES = host-python3
@@ -83,7 +91,6 @@ IREE_RUNTIME_DEPENDENCIES += python3 python-numpy
 IREE_RUNTIME_CONF_OPTS += \
 	-DIREE_BUILD_PYTHON_BINDINGS=ON \
 	-DIREE_USE_SYSTEM_DEPS=OFF \
-	-DFETCHCONTENT_FULLY_DISCONNECTED=ON \
 	-DFETCHCONTENT_SOURCE_DIR_NANOBIND=$(@D)/nanobind \
 	-DIREE_ENABLE_PYTHON_STABLE_ABI=ON \
 	-DPython3_EXECUTABLE=$(HOST_DIR)/bin/python3 \

@@ -25,7 +25,7 @@ WHISPER_CPP_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS=-latomic
 endif
 
 ifeq ($(BR2_PACKAGE_WHISPER_CPP_VULKAN),y)
-WHISPER_CPP_DEPENDENCIES += host-shaderc vulkan-loader
+WHISPER_CPP_DEPENDENCIES += host-shaderc spirv-headers vulkan-loader
 WHISPER_CPP_CONF_OPTS += -DGGML_VULKAN=ON
 else
 WHISPER_CPP_CONF_OPTS += -DGGML_VULKAN=OFF
@@ -34,7 +34,7 @@ endif
 # Only the tools are installed; the static libraries and headers are not
 define WHISPER_CPP_INSTALL_TARGET_CMDS
 	$(foreach t,whisper-cli whisper-server whisper-bench,\
-		$(INSTALL) -D -m 0755 $(@D)/buildroot-build/bin/$(t) \
+		$(INSTALL) -D -m 0755 $(WHISPER_CPP_BUILDDIR)/bin/$(t) \
 			$(TARGET_DIR)/usr/bin/$(t)$(sep))
 endef
 

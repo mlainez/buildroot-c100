@@ -17,6 +17,7 @@ config BR2_PACKAGE_WHISPER_CPP_VULKAN
 	bool "Vulkan support"
 	depends on !BR2_STATIC_LIBS # vulkan-loader
 	select BR2_PACKAGE_VULKAN_LOADER
+	select BR2_PACKAGE_SPIRV_HEADERS
 	help
 	  Enable ggml's Vulkan backend for GPU acceleration.
 
