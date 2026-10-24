@@ -1,0 +1,13 @@
+config BR2_PACKAGE_OPENCV4_VKSTEREO
+	bool "opencv4-vkstereo"
+	depends on BR2_PACKAGE_OPENCV4
+	depends on !BR2_STATIC_LIBS # vulkan-loader
+	select BR2_PACKAGE_OPENCV4_LIB_CALIB3D
+	select BR2_PACKAGE_OPENCV4_LIB_IMGPROC
+	select BR2_PACKAGE_VULKAN_LOADER
+	select BR2_PACKAGE_VULKAN_HEADERS
+	help
+	  cv::vkstereo::StereoSGM, semi-global stereo matching on
+	  Vulkan compute with the semantics of Fixstars libSGM, built
+	  as an OpenCV extra module. With the OpenCV Python bindings it
+	  is available as cv2.vkstereo.

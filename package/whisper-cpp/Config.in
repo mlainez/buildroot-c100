@@ -1,0 +1,28 @@
+config BR2_PACKAGE_WHISPER_CPP
+	bool "whisper-cpp"
+	depends on BR2_INSTALL_LIBSTDCPP
+	depends on BR2_USE_WCHAR
+	depends on BR2_TOOLCHAIN_HAS_THREADS
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_9
+	help
+	  Speech recognition with OpenAI's Whisper models in C/C++,
+	  on ggml. Installs whisper-cli, whisper-server and
+	  whisper-bench, with ggml linked in statically.
+
+	  https://github.com/ggml-org/whisper.cpp
+
+if BR2_PACKAGE_WHISPER_CPP
+
+config BR2_PACKAGE_WHISPER_CPP_VULKAN
+	bool "Vulkan support"
+	depends on !BR2_STATIC_LIBS # vulkan-loader
+	select BR2_PACKAGE_VULKAN_LOADER
+	help
+	  Enable ggml's Vulkan backend for GPU acceleration.
+
+endif
+
+comment "whisper-cpp needs a toolchain w/ C++, wchar, threads, and gcc >= 9"
+	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_USE_WCHAR \
+		|| !BR2_TOOLCHAIN_HAS_THREADS \
+		|| !BR2_TOOLCHAIN_GCC_AT_LEAST_9
