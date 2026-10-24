@@ -1,0 +1,2 @@
+source "$BR2_EXTERNAL_OKDO_C100_PATH/package/tegra210-firmware/Config.in"
+source "$BR2_EXTERNAL_OKDO_C100_PATH/package/mesa3d-nvk/Config.in"

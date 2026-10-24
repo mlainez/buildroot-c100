@@ -1,0 +1,19 @@
+# Applied on top of p3450-0000_defconfig
+
+# The C100 module has no SPI flash and this system keeps no U-Boot
+# environment: U-Boot always starts with its built-in one.
+# CONFIG_ENV_IS_IN_SPI_FLASH is not set
+CONFIG_ENV_IS_NOWHERE=y
+
+# Boot the root filesystem on the microSD card (mmc1) through extlinux.conf
+# in its boot partition. The load addresses keep clear of 0x83400000-
+# 0x8341ffff, where cboot leaves the DRAM timing tables that Linux uses, and
+# let booti run the kernel Image in place.
+CONFIG_USE_BOOTCOMMAND=y
+CONFIG_BOOTCOMMAND="setenv kernel_addr_r 0x84000000; setenv fdt_addr_r 0x83000000; setenv ramdisk_addr_r 0x8a000000; sysboot mmc 1:1 any 0x90000000 /extlinux/extlinux.conf"
+
+# U-Boot lives on the microSD card, not in the 768 KiB SPI flash region that
+# this limit protects on the developer kit.
+# CONFIG_HAS_BOARD_SIZE_LIMIT is not set
+
+CONFIG_BOOTDELAY=1
