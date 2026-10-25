@@ -136,6 +136,22 @@
 				#address-cells = <1>;
 				#size-cells = <0>;
 
+				/*
+				 * The test pattern generator's clock comes from PLL_D,
+				 * which also clocks the display controller driving DP:
+				 * setting its rate would change the display's pixel
+				 * clock. Only the lane clocks are set.
+				 */
+				assigned-clocks = <&tegra_car TEGRA210_CLK_CILAB>,
+						  <&tegra_car TEGRA210_CLK_CILCD>,
+						  <&tegra_car TEGRA210_CLK_CILE>;
+				assigned-clock-parents = <&tegra_car TEGRA210_CLK_PLL_P>,
+							 <&tegra_car TEGRA210_CLK_PLL_P>,
+							 <&tegra_car TEGRA210_CLK_PLL_P>;
+				assigned-clock-rates = <102000000>,
+						       <102000000>,
+						       <102000000>;
+
 				channel@0 {
 					reg = <0>;
 					nvidia,mipi-calibrate = <&mipi 0x01>; /* CSIA pad */
