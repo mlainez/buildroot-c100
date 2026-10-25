@@ -5,6 +5,8 @@
 ################################################################################
 
 IREE_RUNTIME_VERSION = 89ece87b89852100c0a4ac3d515e14842d090967
+# The IREE release at this revision
+IREE_RUNTIME_PYTHON_VERSION = 3.13.0
 IREE_RUNTIME_SITE = $(call github,iree-org,iree,$(IREE_RUNTIME_VERSION))
 IREE_RUNTIME_LICENSE = Apache-2.0 with LLVM exception
 IREE_RUNTIME_LICENSE_FILES = LICENSE
@@ -110,6 +112,19 @@ define IREE_RUNTIME_INSTALL_PYTHON_PACKAGE
 		--component IreePythonPackage-runtime --prefix $(@D)/python-install
 	cp -a $(@D)/python-install/python_packages/iree_runtime/iree \
 		$(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages/
+	$(IREE_RUNTIME_INSTALL_DIST_INFO)
+endef
+
+# Registers the package as iree-base-runtime, the name of IREE's own wheel, so
+# that pip installs tools that depend on it, such as iree-turbine, without
+# replacing it with that wheel
+IREE_RUNTIME_DIST_INFO = $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/site-packages/iree_base_runtime-$(IREE_RUNTIME_PYTHON_VERSION).dist-info
+define IREE_RUNTIME_INSTALL_DIST_INFO
+	mkdir -p $(IREE_RUNTIME_DIST_INFO)
+	printf 'Metadata-Version: 2.1\nName: iree-base-runtime\nVersion: %s\nRequires-Dist: numpy\nRequires-Dist: ml_dtypes\n' \
+		$(IREE_RUNTIME_PYTHON_VERSION) > $(IREE_RUNTIME_DIST_INFO)/METADATA
+	echo buildroot > $(IREE_RUNTIME_DIST_INFO)/INSTALLER
+	touch $(IREE_RUNTIME_DIST_INFO)/RECORD
 endef
 IREE_RUNTIME_POST_INSTALL_TARGET_HOOKS += IREE_RUNTIME_INSTALL_PYTHON_PACKAGE
 else
