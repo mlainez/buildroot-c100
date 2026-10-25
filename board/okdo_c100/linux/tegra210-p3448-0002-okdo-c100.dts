@@ -138,6 +138,7 @@
 
 				channel@0 {
 					reg = <0>;
+					nvidia,mipi-calibrate = <&mipi 0x01>; /* CSIA pad */
 					#address-cells = <1>;
 					#size-cells = <0>;
 
@@ -161,6 +162,7 @@
 
 				channel@4 {
 					reg = <4>;
+					nvidia,mipi-calibrate = <&mipi 0x10>; /* CSIE pad */
 					#address-cells = <1>;
 					#size-cells = <0>;
 
