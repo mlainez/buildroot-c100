@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# Grows the root partition and its ext4 filesystem to the end of the card on
+# the first boot. The card image is smaller than any card it is written to.
+
+DONE=/etc/growfs.done
+
+[ "$1" = "start" ] || exit 0
+[ -e "$DONE" ] && exit 0
+
+uuid=$(sed -n 's/.*root=PARTUUID=\([^ ]*\).*/\1/p' /proc/cmdline)
+part=$(readlink -f "/dev/disk/by-partuuid/$uuid")
+disk=${part%p[0-9]*}
+num=${part##*p}
+if [ ! -b "$part" ] || [ ! -b "$disk" ]; then
+	echo "growfs: root partition not found"
+	exit 0
+fi
+
+printf "Growing %s to the end of %s: " "$part" "$disk"
+# Move the GPT backup header to the end of the card, extend the partition,
+# then the mounted filesystem
+if sfdisk --relocate gpt-bak-std "$disk" >/dev/null 2>&1 &&
+	echo ", +" | sfdisk --no-reread --no-tell-kernel -N "$num" "$disk" >/dev/null 2>&1 &&
+	partx -u -n "$num" "$disk" &&
+	resize2fs "$part" >/dev/null 2>&1; then
+	touch "$DONE"
+	echo "OK"
+else
+	echo "FAIL"
+fi

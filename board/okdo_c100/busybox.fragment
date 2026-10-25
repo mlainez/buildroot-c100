@@ -1,0 +1,2 @@
+# Applied on top of Buildroot's BusyBox configuration
+CONFIG_TIMEOUT=y
