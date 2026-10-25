@@ -16,10 +16,4 @@ LLAMA_CPP_DEPENDENCIES += host-shaderc
 $(LLAMA_CPP_TARGET_CONFIGURE): | host-shaderc
 endif
 
-# Without a Fortran compiler, OpenBLAS only provides the CBLAS interface, which
-# ggml's BLAS backend does not use
-ifeq ($(BR2_PACKAGE_OPENBLAS):$(BR2_TOOLCHAIN_HAS_FORTRAN),y:)
-LLAMA_CPP_CONF_OPTS += -DGGML_BLAS=OFF
-endif
-
 endif
