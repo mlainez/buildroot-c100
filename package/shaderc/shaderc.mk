@@ -42,9 +42,3 @@ HOST_SHADERC_CONF_OPTS = \
 	-DENABLE_GLSLANG_BINARIES=OFF
 
 $(eval $(host-cmake-package))
-
-# Buildroot's llama-cpp compiles ggml's Vulkan shaders with glslc
-ifeq ($(BR2_PACKAGE_LLAMA_CPP_VULKAN),y)
-LLAMA_CPP_DEPENDENCIES += host-shaderc
-$(LLAMA_CPP_TARGET_CONFIGURE): | host-shaderc
-endif
