@@ -33,9 +33,9 @@ NVIDIA's boot firmware on the module always starts the U-Boot in the eMMC
 `LNX` partition, as shipped by OKdo or installed with
 [c100-bootupd](https://github.com/LetsOKdo/c100-bootupd); nothing on the eMMC
 is modified. Its distro boot finds `boot.scr` in the card's boot partition,
-which starts this system's U-Boot from the same partition. That U-Boot loads
-the kernel and device tree through `extlinux/extlinux.conf` and boots the ext4
-root filesystem.
+which starts this system's U-Boot from the same partition. That U-Boot runs
+`boot.scr` again, which then loads the kernel and device tree and boots the
+ext4 root filesystem. The kernel command line is in `board/okdo_c100/uboot/boot.cmd`.
 
 Log in as `root` on the serial console; there is no password. For SSH, set a
 root password or add a key to `/root/.ssh/authorized_keys`.

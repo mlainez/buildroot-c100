@@ -5,12 +5,12 @@
 # CONFIG_ENV_IS_IN_SPI_FLASH is not set
 CONFIG_ENV_IS_NOWHERE=y
 
-# Boot the root filesystem on the microSD card (mmc1) through extlinux.conf
-# in its boot partition. The load addresses keep clear of 0x83400000-
-# 0x8341ffff, where cboot leaves the DRAM timing tables that Linux uses, and
-# let booti run the kernel Image in place.
+# Run boot.scr from the microSD card's (mmc1) boot partition, which boots
+# Linux when okdo_c100_uboot is set. The load addresses keep clear of
+# 0x83400000-0x8341ffff, where cboot leaves the DRAM timing tables that Linux
+# uses, and let booti run the kernel Image in place.
 CONFIG_USE_BOOTCOMMAND=y
-CONFIG_BOOTCOMMAND="setenv kernel_addr_r 0x84000000; setenv fdt_addr_r 0x83000000; setenv ramdisk_addr_r 0x8a000000; sysboot mmc 1:1 any 0x90000000 /extlinux/extlinux.conf"
+CONFIG_BOOTCOMMAND="setenv okdo_c100_uboot 1; setenv kernel_addr_r 0x84000000; setenv fdt_addr_r 0x83000000; setenv scriptaddr 0x90000000; fatload mmc 1:1 ${scriptaddr} boot.scr && source ${scriptaddr}"
 
 # U-Boot lives on the microSD card, not in the 768 KiB SPI flash region that
 # this limit protects on the developer kit.
