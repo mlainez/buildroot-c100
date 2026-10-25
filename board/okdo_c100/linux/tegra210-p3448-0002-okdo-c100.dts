@@ -45,8 +45,146 @@
 		};
 	};
 
+	/*
+	 * The two camera connectors (CAM0 on CSI port A, CAM1 on CSI port E,
+	 * two lanes each) share the VI I2C bus through a GPIO-switched mux.
+	 * They are described for Raspberry Pi Camera v2 modules (IMX219), which
+	 * carry their own 24 MHz oscillator and regulators.
+	 */
+	cam_clk: clock-camera {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <24000000>;
+	};
+
+	i2c-mux-camera {
+		compatible = "i2c-mux-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		i2c-parent = <&vi_i2c>;
+		mux-gpios = <&gpio TEGRA_GPIO(I, 0) GPIO_ACTIVE_HIGH>;
+
+		i2c@0 {
+			reg = <0>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			camera@10 {
+				compatible = "sony,imx219";
+				reg = <0x10>;
+				clocks = <&cam_clk>;
+				reset-gpios = <&gpio TEGRA_GPIO(S, 7) GPIO_ACTIVE_HIGH>;
+
+				port {
+					cam0_out: endpoint {
+						remote-endpoint = <&csi_a_in>;
+						data-lanes = <1 2>;
+						clock-noncontinuous;
+						link-frequencies = /bits/ 64 <456000000>;
+					};
+				};
+			};
+		};
+
+		i2c@1 {
+			reg = <1>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			camera@10 {
+				compatible = "sony,imx219";
+				reg = <0x10>;
+				clocks = <&cam_clk>;
+				reset-gpios = <&gpio TEGRA_GPIO(T, 0) GPIO_ACTIVE_HIGH>;
+
+				port {
+					cam1_out: endpoint {
+						remote-endpoint = <&csi_e_in>;
+						data-lanes = <1 2>;
+						clock-noncontinuous;
+						link-frequencies = /bits/ 64 <456000000>;
+					};
+				};
+			};
+		};
+	};
+
 	host1x@50000000 {
-		i2c@546c0000 {
+		vi@54080000 {
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@0 {
+					reg = <0>;
+
+					vi_a_in: endpoint {
+						remote-endpoint = <&csi_a_out>;
+					};
+				};
+
+				port@4 {
+					reg = <4>;
+
+					vi_e_in: endpoint {
+						remote-endpoint = <&csi_e_out>;
+					};
+				};
+			};
+
+			csi@838 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				channel@0 {
+					reg = <0>;
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					port@0 {
+						reg = <0>;
+
+						csi_a_in: endpoint {
+							data-lanes = <1 2>;
+							remote-endpoint = <&cam0_out>;
+						};
+					};
+
+					port@1 {
+						reg = <1>;
+
+						csi_a_out: endpoint {
+							remote-endpoint = <&vi_a_in>;
+						};
+					};
+				};
+
+				channel@4 {
+					reg = <4>;
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					port@0 {
+						reg = <0>;
+
+						csi_e_in: endpoint {
+							data-lanes = <1 2>;
+							remote-endpoint = <&cam1_out>;
+						};
+					};
+
+					port@1 {
+						reg = <1>;
+
+						csi_e_out: endpoint {
+							remote-endpoint = <&vi_e_in>;
+						};
+					};
+				};
+			};
+		};
+
+		vi_i2c: i2c@546c0000 {
 			power-sensor@40 {
 				compatible = "ti,ina3221";
 				reg = <0x40>;

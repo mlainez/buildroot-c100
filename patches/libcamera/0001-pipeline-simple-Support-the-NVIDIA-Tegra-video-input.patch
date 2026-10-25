@@ -1,0 +1,19 @@
+From: Marc Lainez <marc.lainez@gmail.com>
+Subject: [PATCH] pipeline: simple: Support the NVIDIA Tegra video input
+
+The tegra-video driver captures raw Bayer frames from CSI sensors on
+Tegra210 without an ISP, so the frames go through the software ISP.
+
+Assisted-by: Claude:claude-opus-5-5
+---
+diff --git a/src/libcamera/pipeline/simple/simple.cpp b/src/libcamera/pipeline/simple/simple.cpp
+--- a/src/libcamera/pipeline/simple/simple.cpp
++++ b/src/libcamera/pipeline/simple/simple.cpp
+@@ -265,6 +265,7 @@ static const SimplePipelineInfo supportedDevices[] = {
+ 	{ "mxc-isi", {}, false },
+ 	{ "qcom-camss", {}, true },
+ 	{ "sun6i-csi", {}, false },
++	{ "tegra-video", {}, true },
+ };
+ 
+ bool isRaw(const StreamConfiguration &cfg)
