@@ -6,12 +6,15 @@ config BR2_PACKAGE_IREE_RUNTIME
 	depends on !BR2_STATIC_LIBS # vulkan-loader, dlopen
 	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_9
 	select BR2_PACKAGE_VULKAN_LOADER
+	# Python bindings, which need NumPy and ml_dtypes
+	select BR2_PACKAGE_PYTHON_ML_DTYPES if BR2_PACKAGE_PYTHON3 && \
+		BR2_PACKAGE_PYTHON_NUMPY_ARCH_SUPPORTS
 	help
 	  The IREE runtime: loads and runs ML modules compiled ahead of
 	  time by the IREE compiler on the build host, on Vulkan GPUs
 	  and on the CPU. Installs iree-run-module and the other IREE
-	  tools. With Python 3 and NumPy, also installs the
-	  iree.runtime package.
+	  tools. With Python 3, also installs the iree.runtime
+	  package.
 
 	  Includes fixes for non-coherent device memory and the TLSF
 	  pool allocator, needed on the Tegra X1.

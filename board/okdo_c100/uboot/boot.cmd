@@ -8,7 +8,7 @@
 #    Linux.
 
 if test "${okdo_c100_uboot}" = "1"; then
-	setenv bootargs console=tty1 console=ttyS0,115200n8 root=PARTUUID=a57829cf-995e-43fc-86e3-591c78f62b06 rootfstype=ext4 rootwait rw
+	setenv bootargs console=tty1 console=ttyS0,115200n8 net.ifnames=0 root=PARTUUID=a57829cf-995e-43fc-86e3-591c78f62b06 rootfstype=ext4 rootwait rw
 	fatload mmc 1:1 ${kernel_addr_r} Image
 	fatload mmc 1:1 ${fdt_addr_r} tegra210-p3448-0002-okdo-c100.dtb
 	booti ${kernel_addr_r} - ${fdt_addr_r}

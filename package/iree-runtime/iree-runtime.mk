@@ -76,15 +76,19 @@ define HOST_IREE_RUNTIME_INSTALL_CMDS
 endef
 
 IREE_RUNTIME_DEPENDENCIES = host-iree-runtime vulkan-loader
+# Static libraries, linked into the tools and the Python extension, as in
+# IREE's own packages
 IREE_RUNTIME_CONF_OPTS = \
 	$(IREE_RUNTIME_COMMON_CONF_OPTS) \
+	-DBUILD_SHARED_LIBS=OFF \
+	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
 	-DIREE_HOST_BIN_DIR=$(HOST_DIR)/bin \
 	-DIREE_HAL_DRIVER_VULKAN=ON \
 	-DIREE_HAL_DRIVER_LOCAL_SYNC=ON \
 	-DIREE_HAL_DRIVER_LOCAL_TASK=ON
 
-ifeq ($(BR2_PACKAGE_PYTHON3)$(BR2_PACKAGE_PYTHON_NUMPY),yy)
-IREE_RUNTIME_DEPENDENCIES += python3 python-numpy
+ifeq ($(BR2_PACKAGE_PYTHON3)$(BR2_PACKAGE_PYTHON_ML_DTYPES),yy)
+IREE_RUNTIME_DEPENDENCIES += python3 python-numpy python-ml-dtypes
 # FindPython runs the host interpreter, so point it at the target's headers
 # and NumPy. The extension is built against Python's stable ABI, so its file
 # name does not depend on the build host.
