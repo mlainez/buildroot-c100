@@ -54,6 +54,31 @@ checks Vulkan; `kmscube` checks OpenGL ES on HDMI.
 The CPU runs up to 1479 MHz and the GPU between 76.8 and 921.6 MHz (devfreq),
 the module's validated maxima; the DRAM runs at 1600 MHz.
 
+## Compared with NVIDIA JetPack
+
+NVIDIA's software for the Jetson Nano ends with JetPack 4.6 (L4T R32.7):
+Ubuntu 18.04 on a 4.9 kernel, with a proprietary GPU stack built around CUDA.
+This system uses no NVIDIA software except the boot firmware on the eMMC and
+the GPU and USB controller firmware from linux-firmware, and replaces each
+part with open source, mostly on Vulkan:
+
+| JetPack 4.6                                  | This system                                                        |
+| -------------------------------------------- | ------------------------------------------------------------------ |
+| Ubuntu 18.04, Python 3.6                     | Buildroot 2026.08, Python 3.14                                     |
+| L4T kernel 4.9                               | Mainline Linux 6.18                                                |
+| cboot, then L4T U-Boot 2020.04 on the eMMC   | Unchanged on the eMMC; mainline U-Boot 2026.07 runs from the card  |
+| `nvgpu` driver, proprietary OpenGL ES and Vulkan 1.2 | `nouveau` driver, Mesa OpenGL ES 3.2 and Vulkan 1.3 (NVK)  |
+| CUDA 10.2                                    | Not available: compute runs as Vulkan shaders                      |
+| cuDNN 8.2, TensorRT 8.2                      | IREE: models compiled ahead of time on a computer, run with `iree.runtime` |
+| CUDA builds of PyTorch and TensorFlow        | Not available: models are trained elsewhere and compiled with IREE |
+| No LLM or speech runtime; users built llama.cpp or whisper.cpp against CUDA | llama.cpp and whisper.cpp on Vulkan               |
+| OpenCV 4.1.1 on the CPU, VPI 1.2 for GPU stereo | OpenCV 4.13 with `cv2.vkstereo`, a GPU stereo matcher           |
+| Ubuntu's NumPy                               | NumPy with OpenBLAS                                                |
+| NVENC/NVDEC video codecs, DeepStream, GStreamer plugins | Not available: video is encoded and decoded on the CPU  |
+| CSI cameras through the ISP (libargus)       | Not available: USB (UVC) cameras through V4L2                      |
+| `nvpmodel`, `jetson_clocks`, `tegrastats`    | Clock limits set in the device tree; `cpufreq` and `devfreq` in sysfs, `htop` |
+| Docker and NVIDIA's L4T containers           | Not included                                                       |
+
 ## Using the GPU
 
 Models are not included; download them with `curl`. The examples assume a
